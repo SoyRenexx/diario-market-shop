@@ -6,6 +6,8 @@ export interface Product {
   image: string;
   description: string;
   category: string;
+  originalPrice?: number;
+  discountPercentage?: number;
 }
 
 export interface CartItem {

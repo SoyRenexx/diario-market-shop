@@ -1,19 +1,33 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShoppingCart, Menu, X, Search, LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import Cart from '@/components/Cart';
 
 const Navbar: React.FC = () => {
   const { cart } = useCart();
+  const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Sesión cerrada",
+      description: "Has cerrado sesión correctamente",
+    });
+    navigate('/login');
   };
 
   return (
@@ -51,6 +65,15 @@ const Navbar: React.FC = () => {
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             </div>
+
+            {user && (
+              <div className="hidden md:flex items-center">
+                <span className="text-sm text-gray-600 mr-2">Hola, {user.name}</span>
+                <Button variant="ghost" size="icon" onClick={handleLogout} title="Cerrar sesión">
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </div>
+            )}
 
             <Sheet>
               <SheetTrigger asChild>
@@ -104,6 +127,15 @@ const Navbar: React.FC = () => {
               <Link to="/about" className="text-gray-600 hover:text-teal transition-colors" onClick={toggleMobileMenu}>
                 Nosotros
               </Link>
+              {user && (
+                <div className="flex items-center justify-between pt-2 border-t">
+                  <span className="text-sm text-gray-600">Hola, {user.name}</span>
+                  <Button variant="ghost" size="sm" onClick={handleLogout} className="flex items-center">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Cerrar sesión
+                  </Button>
+                </div>
+              )}
             </nav>
           </div>
         )}
