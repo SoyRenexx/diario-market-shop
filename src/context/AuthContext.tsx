@@ -39,7 +39,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     // For demo purposes, we'll use a simple check
-    // In a real app, you would validate against a backend
     return new Promise((resolve) => {
       setTimeout(() => {
         if (email === 'admin@ejemplo.com' && password === 'password') {

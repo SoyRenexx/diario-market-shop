@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Lock, User } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -12,8 +13,9 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -28,29 +30,24 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    // For demo purposes, we'll use a simple check
-    // In a real app, you would validate against a backend
-    setTimeout(() => {
-      if (email === 'admin@ejemplo.com' && password === 'password') {
-        // Store login state in localStorage
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('user', JSON.stringify({ email, name: 'Usuario Demo' }));
-        
-        toast({
-          title: "¡Bienvenido!",
-          description: "Has iniciado sesión correctamente",
-        });
-        
-        navigate('/');
-      } else {
-        toast({
-          title: "Error de autenticación",
-          description: "Email o contraseña incorrectos",
-          variant: "destructive",
-        });
-      }
-      setIsLoading(false);
-    }, 1000);
+    // Use the login function from AuthContext
+    const success = await login(email, password);
+    
+    if (success) {
+      toast({
+        title: "¡Bienvenido!",
+        description: "Has iniciado sesión correctamente",
+      });
+      navigate('/');
+    } else {
+      toast({
+        title: "Error de autenticación",
+        description: "Email o contraseña incorrectos",
+        variant: "destructive",
+      });
+    }
+    
+    setIsLoading(false);
   };
 
   return (
